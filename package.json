@@ -14,10 +14,12 @@
     "react-dom": "16.8.3",
     "react-native": "https://github.com/expo/react-native/archive/sdk-35.0.0.tar.gz",
     "react-native-check-box": "^2.1.7",
+    "react-native-customized-image-picker": "^0.1.5",
     "react-native-datepicker": "^1.7.2",
     "react-native-draggable-flatlist": "^1.1.9",
     "react-native-modal-datetime-picker": "^7.6.0",
-    "react-native-web": "^0.11.7"
+    "react-native-web": "^0.11.7",
+    "expo-image-picker": "~7.0.0"
   },
   "devDependencies": {
     "babel-preset-expo": "^7.1.0"

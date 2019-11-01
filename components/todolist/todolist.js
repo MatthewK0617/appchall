@@ -8,7 +8,7 @@ import { differenceInCalendarDays, format, today, isEqual } from 'date-fns';
 
 const DATA = [
     {
-        id: 0,
+        id: 1,
         title: "title",
         description: "desc",
         img: undefined,
@@ -22,24 +22,11 @@ const DATA = [
             'body para 1',
             'body para 1',
         ],
-        imgs: [
-            '.pjpg','ppng'
-        ],
-        completed: [true, true, false],
-        completed2: false
-    },
-    {
-        id: 1,
-        title: "title2",
-        description: "desc",
-        img: undefined,
-        created: new Date().getTime(),
-        completed: false,
-        dueDate: new Date().getTime(),
-        color: "skyblue",
-        className: "Math",
-        type: "homework", // eventually take in the corresponding boolean
-        importance: 3
+        // imgs: [
+        //     '.pjpg', 'ppng'
+        // ],
+        // completed: [true, true, false],
+        // completed2: false
     }
 ]
 
@@ -57,7 +44,7 @@ export default function TodoList({ today }) {
         entries2.filter(v => v.id !== entry.id);
         setEntries(entries2);
         if (entries2.length === 0) {
-          AsyncStorage.setItem('entries', '[]');
+            AsyncStorage.setItem('entries', '[]');
         }
     }
 
@@ -70,20 +57,33 @@ export default function TodoList({ today }) {
         setEntries(entries2);
     }
 
+    /* **********************End of Entries************************** */
+
+    let updateImage = (id, uri) => {
+        let entries2 = [...entries];
+        entries2.forEach(e => {
+            if (e.id === id) {
+                e.img = uri;
+            }
+        });
+        setImg(uri);
+        setEntries(entries2);
+    };
+
     React.useEffect(() => {
         async function load() {
-          let data = await AsyncStorage.getItem('entries');
-          if (!data) setEntries([]);
-          else setEntries(JSON.parse(data));
+            let data = await AsyncStorage.getItem('entries');
+            if (!data) setEntries(DATA);
+            else setEntries(JSON.parse(data));
         }
         load();
-      }, []);
+    }, []);
 
-      React.useEffect(() => {
+    React.useEffect(() => {
         if (entries.length > 0) {
-          AsyncStorage.setItem('entries', JSON.stringify(entries));
+            AsyncStorage.setItem('entries', JSON.stringify(entries));
         }
-      }, [entries]);
+    }, [entries]);
 
 
     return (
@@ -105,35 +105,58 @@ function Content({ entries, setEntries, completeEntry }) {
     function renderItem({ item, index, move, moveEnd, isActive }) {
 
         return (
-            <TouchableOpacity
-                style={{
-                    height: 100,
-                    backgroundColor: isActive ? "blue" : item.color,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    margin: 5,
-                }}
-                onLongPress={move}
-                onPressOut={moveEnd}
-            >
-                <TodoListEntry today={today} entry={item} setEntries={setEntries} completeEntry={completeEntry} />
-            </TouchableOpacity>
+            <View>
+                <View style={{
+                    height: 4,
+                }}></View>
+
+                <TouchableOpacity
+                    style={{
+                        margin: 1,
+                        height: 100,
+                        backgroundColor: isActive ? 'lavender' : 'white',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginLeft: 10,
+                        marginRight: 10,
+                        borderTopWidth: 3,
+                        borderTopColor: item.color,
+                    }}
+                    onLongPress={move}
+                    onPressOut={moveEnd}
+                >
+                    <TodoListEntry today={today} entry={item} setEntries={setEntries} completeEntry={completeEntry} />
+                </TouchableOpacity>
+            </View>
         );
     }
 
     const todaysEntries = entries.filter(
-        e => today >= new Date(e.created) && today <= new Date(e.dueDate)
-      );
+        e => (today >= new Date(e.created) && today <= new Date(e.dueDate))
+    );
+
+    /***** if I make <DraggableFlatList data={todaysEntries}, nothing shows  *****/
 
     return (
         <View style={{ flex: 1 }}>
-            <DraggableFlatList data={todaysEntries}
+            <View style={{
+                    height: 4,
+                }}></View>
+            <DraggableFlatList data={entries}
                 renderItem={renderItem}
                 keyExtractor={d => d.id}
                 scrollPercent={0.001}
-                onMoveEnd={({ data }) => setEntries(ntries => {
-                    return [...data];
-                })} />
+                onMoveEnd={({ data }) => {
+                    setEntries(entries => {
+                        return [
+                            ...data,
+                            ...entries.filter(e => today >= new Date(e.created) && today <= new Date(e.dueDate)),
+                        ];
+                    })
+                }} />
+                <View style={{
+                    height: 55
+                }}></View>
         </View>
     );
 }

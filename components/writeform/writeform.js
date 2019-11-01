@@ -9,6 +9,7 @@ import {
     Dimensions,
     Button,
     Picker,
+    ScrollView,
     Platform,
 } from 'react-native';
 import DateTimePicker from 'react-native-modal-datetime-picker';
@@ -39,7 +40,14 @@ const CLASSES = [
     { id: "Science", color: "lightgreen", teacher: "Mr. Jones" },
     { id: "Social Studies", color: "lightpink", teacher: "Mrs. Jones" },
     { id: "English", color: "yellow", teacher: "Dr. Jones" },
-    { id: "Extra Curricular", color: "lightgray", teacher: "None" }
+    { id: "Extra Curricular", color: "lightgray", teacher: "None" },
+    { id: "Extra Curricular", color: "lightgray", teacher: "None" },
+    { id: "Extra Curricular", color: "lightgray", teacher: "None" },
+    { id: "Extra Curricular", color: "lightgray", teacher: "None" },
+    { id: "Extra Curricular", color: "lightgray", teacher: "None" },
+    { id: "Extra Curricular", color: "lightgray", teacher: "None" },
+
+
 ]
 
 const TYPES = [
@@ -54,13 +62,14 @@ function Content({ addEntry }) {
     let today = new Date();
     let [title, setTitle] = React.useState("");
     let [desc, setDesc] = React.useState("");
-    let [importance, setImportance] = React.useState(2);
+    let [importance, setImportance] = React.useState(3);
     let [type, setType] = React.useState("Homework");
     let [c, setC] = React.useState(-1);
     let [dueDate, setDueDate] = React.useState(new Date());
+    let [image, setImage] = React.useState(undefined);
 
     return (
-        <View style={styles.content}>
+        <ScrollView style={styles.content}>
             <View style={styles.contentTopRow}>
                 <TextInput value={title} onChangeText={newValue => setTitle(newValue)} style={styles.entersubject} placeholder="Enter Title" />
             </View>
@@ -69,9 +78,18 @@ function Content({ addEntry }) {
             </View>
             <View style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
                 <TouchableOpacity onPress={() => setShowClasses(!showClasses)}><Text>{c === -1 ? "Select Class" : CLASSES[c].id}</Text></TouchableOpacity>
-                {showClasses && <View style={{ flexDirection: 'column', justifyContent: "center" }}>
+                {showClasses && <View style={{
+                    flexDirection: 'row', justifyContent: "center", flexWrap: 'wrap'
+                }}>
                     {CLASSES.map((c, i) => (
-                        <TouchableOpacity key={c + i} onPress={() => { setC(i); setShowClasses(false) }}><Text>{c.id}</Text></TouchableOpacity>))}
+                        <TouchableOpacity style={{
+                            borderRadius: 3,
+                            backgroundColor: c.i === c ? 'purple' : 'black', // check ****
+                            padding: 4,
+                            margin: 3,
+                        }} key={c + i} onPress={() => { setC(i) }}><Text style={{
+                            color: 'white',
+                        }}>{c.id}</Text></TouchableOpacity>))}
                 </View>}
             </View>
             <View style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
@@ -100,7 +118,15 @@ function Content({ addEntry }) {
             <View style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
                 <Text>Set Importance {importance}</Text>
                 <View style={{ flexDirection: 'row' }}>
-                    {new Array(5).fill(0).map((v, i) => <Button color={i === importance - 1 ? "white" : ""} title={i + 1 + ""} onPress={() => setImportance(i + 1)} />)}
+                    {new Array(5).fill(0).map((v, i) => <TouchableOpacity style={{
+                        backgroundColor: i === importance - 1 ? "white" : "", // problem, can select all at one time ******
+                        justifyContent: "center",
+                        alignItems: "center",
+                        borderRadius: 3,
+                        padding: 4,
+                        margin: 3,
+                        width: 30,
+                    }} onPress={() => setImportance(i + 1)}><Text>{i + 1 + ""}</Text></TouchableOpacity>)}
                 </View>
             </View>
             <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
@@ -109,7 +135,12 @@ function Content({ addEntry }) {
                 ))}
             </View>
             <View style={{ display: 'flex', justifyContent: 'flex-end', alignContent: 'flex-end', width: Dimensions.get('window').width }}>
-                <TouchableOpacity style={styles.iconCircle} onPress={() =>
+
+                {/****** NOT DOING WHAT IT IS SUPPOSED TO ******/}
+
+                {c === "" && title === "" && <TouchableOpacity><Ionicons name="md-add" size={32} color={'white'} /></TouchableOpacity>} 
+
+               {c !== "" && title !== "" && <TouchableOpacity style={styles.iconCircle} onPress={() =>
                     addEntry({
                         id: title + new Date().getTime(),
                         title: title,
@@ -125,9 +156,9 @@ function Content({ addEntry }) {
                     })
                 }>
                     <Ionicons name="md-add" size={32} color={'white'} />
-                </TouchableOpacity>
+            </TouchableOpacity>}
             </View>
-        </View>
+        </ScrollView>
     );
 }
 

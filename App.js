@@ -11,6 +11,7 @@ export default function App() {
     <View>
       {page === "Front Page" &&
         <FrontPage setPage={setPage}/>}
+
       {page === "Calendar" && 
         <Calendar />
       }

@@ -1,13 +1,13 @@
 import React from 'react';
-import { View, Text, StyleSheet, StatusBar, Dimensions, Platform, AsyncStorage } from 'react-native';
+import { View, Text, StyleSheet, StatusBar, Dimensions, Platform, AsyncStorage, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../../Constants';
 import { DayCell, Cell } from './cell';
-import { getDate, getDaysInMonth, startOfDay, getMonth, getDay, format } from 'date-fns';
+import { getDate, getDaysInMonth, startOfDay, format } from 'date-fns';
 import TodoList from '../todolist/todolist';
 
+
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-const MONTHS = ["January", "t"]
 
 export default function Calendar() {
     let [today, setToday] = React.useState(new Date());
@@ -43,11 +43,18 @@ export default function Calendar() {
             <View style={styles.calendar}>
                 <View style={styles.topRow}>
                     <View>
+                        <TouchableOpacity>
                         <Ionicons name="md-checkbox" size={32} color={colors.blue5} />
+                        </TouchableOpacity>
                     </View>
                     <View style={styles.topRowRight}>
+                        <TouchableOpacity>
                         <Ionicons name="md-checkbox" size={32} color={colors.blue5} />
+                        </TouchableOpacity>
+
+                        <TouchableOpacity>
                         <Ionicons name="md-checkbox" size={32} color={colors.blue5} />
+                        </TouchableOpacity>
                     </View>
                 </View>
 
