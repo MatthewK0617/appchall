@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, StatusBar, Dimensions, Platform } from 'react-native';
+import { View, Text, StyleSheet, StatusBar, Dimensions, Platform, AsyncStorage } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../../Constants';
 import { DayCell, Cell } from './cell';
@@ -18,6 +18,25 @@ export default function Calendar() {
         d.setDate(1);
         return d.getDay();
     }
+
+    React.useEffect(() => {
+        async function load() {
+          let time = await AsyncStorage.getItem(
+            'tlist-' + format(today, 'MM/YYYY')
+          );
+          if (time === null) {
+            AsyncStorage.setItem(
+              'tlist-' + format(today, 'MM/YYYY'),
+              JSON.stringify([])
+            );
+          }
+    
+          let tlist = await AsyncStorage.getItem('');
+        }
+        load();
+      }, []);
+
+      
 
     return (
         <View style={styles.container}>
@@ -61,7 +80,7 @@ export default function Calendar() {
                 </View>
             </View>
             <View style={styles.todoList}>
-                <TodoList />
+                <TodoList today={today} />
             </View>
         </View>
     );

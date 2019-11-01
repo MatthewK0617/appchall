@@ -25,7 +25,7 @@ function EditorScreen({ close, entry, setEntries }) {
     </View>)
 }
 
-export default function TodoListEntry({ entry, setEntries, completeEntry }) {
+export default function TodoListEntry({ entry, setEntries, completeEntry, today }) {
 
     let [showEditor, setShowEditor] = React.useState(false);
 
