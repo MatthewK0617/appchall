@@ -26,7 +26,7 @@ function EditorScreen({ close, entry, setEntries }) {
             padding: 5,
             margin: 5,
         }} placeholder={title} placeholderTextColor={'black'}
-        value={title} onChangeText={setTitle} />
+            value={title} onChangeText={setTitle} />
         <View
             style={{
                 borderBottomColor: 'lightgray',
@@ -42,9 +42,9 @@ function EditorScreen({ close, entry, setEntries }) {
             date={dueDate}
             mode="date"
             placeholder="select date"
-            format="YYYY-MM-DD"
-            minDate="2018-05-01"
-            maxDate="2020-06-01"
+            format="MM-DD-YYYY"
+            minDate="01-05-2018"
+            maxDate="02-06-2020"
             confirmBtnText="Confirm"
             cancelBtnText="Cancel"
             customStyles={{

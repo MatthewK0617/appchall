@@ -96,7 +96,7 @@ function Content({ addEntry }) {
                     date={dueDate}
                     mode="date"
                     placeholder="select date"
-                    format="MM-DD-YYYY"
+                    format="MM/DD/YYYY"
                     minDate="01-05-2018"
                     maxDate="02-06-2020"
                     confirmBtnText="Confirm"

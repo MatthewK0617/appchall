@@ -12,8 +12,8 @@ const DATA = [
         title: "title",
         description: "desc",
         img: undefined,
-        created: 11/2/19,
-        dueDate: 11/4/19,
+        created: '11/2/19',
+        dueDate: '11/4/19',
         color: "skyblue",
         className: "Math",
         type: "homework", // eventually take in the corresponding boolean
@@ -128,7 +128,7 @@ function Content({ entries, today, setEntries, completeEntry }) {
                     onLongPress={move}
                     onPressOut={moveEnd}
                 >
-                    <TodoListEntry removeSubject={removeSubject} today={today} entry={item} setEntries={setEntries} completeEntry={completeEntry} />
+                    <TodoListEntry  today={today} entry={item} setEntries={setEntries} completeEntry={completeEntry} />
                 </TouchableOpacity>
             </View>
         );
