@@ -4,7 +4,7 @@ import { colors } from '../../Constants';
 import TodoListEntry from './todolist-entry';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import WriteForm from '../writeform/writeform';
-import { differenceInCalendarDays, format, today, isEqual } from 'date-fns';
+import { differenceInCalendarDays, format, isEqual, getDate } from 'date-fns';
 
 const DATA = [
     {
@@ -12,8 +12,8 @@ const DATA = [
         title: "title",
         description: "desc",
         img: undefined,
-        created: new Date().getTime(),
-        dueDate: new Date().getTime(),
+        created: 11/2/19,
+        dueDate: 11/4/19,
         color: "skyblue",
         className: "Math",
         type: "homework", // eventually take in the corresponding boolean
@@ -74,7 +74,7 @@ export default function TodoList({ today }) {
         async function load() {
             let data = await AsyncStorage.getItem('entries');
             if (!data) setEntries(DATA);
-            else setEntries(JSON.parse(data));
+            else setEntries([JSON.parse(data)]);
         }
         load();
     }, []);
@@ -90,7 +90,7 @@ export default function TodoList({ today }) {
         <View style={styles.bg}>
             <View style={styles.container}>
                 <Text style={styles.titletxt}>TodoList ({entries.length})</Text>
-                <Content entries={entries} setEntries={setEntries} completeEntry={completeEntry} />
+                <Content today={today} entries={entries} setEntries={setEntries} completeEntry={completeEntry} />
                 <View style={styles.writeForm}>
                     <WriteForm addEntry={addEntry} />
                 </View>
@@ -100,7 +100,7 @@ export default function TodoList({ today }) {
     );
 }
 
-function Content({ entries, setEntries, completeEntry }) {
+function Content({ entries, today, setEntries, completeEntry }) {
 
     function renderItem({ item, index, move, moveEnd, isActive }) {
 
@@ -114,7 +114,10 @@ function Content({ entries, setEntries, completeEntry }) {
                     style={{
                         margin: 1,
                         height: 100,
-                        backgroundColor: isActive ? 'lavender' : 'white',
+                        backgroundColor: isActive ? 'azure' : 'white',
+                        shadowColor: isActive ? 'black' : 'white',
+                        shadowOpacity: 1,
+                        shadowOffset: { width: 0, height: 2 },
                         alignItems: 'center',
                         justifyContent: 'center',
                         marginLeft: 10,
@@ -125,7 +128,7 @@ function Content({ entries, setEntries, completeEntry }) {
                     onLongPress={move}
                     onPressOut={moveEnd}
                 >
-                    <TodoListEntry today={today} entry={item} setEntries={setEntries} completeEntry={completeEntry} />
+                    <TodoListEntry removeSubject={removeSubject} today={today} entry={item} setEntries={setEntries} completeEntry={completeEntry} />
                 </TouchableOpacity>
             </View>
         );
@@ -142,17 +145,12 @@ function Content({ entries, setEntries, completeEntry }) {
             <View style={{
                     height: 4,
                 }}></View>
-            <DraggableFlatList data={entries}
+            <DraggableFlatList data={todaysEntries}
                 renderItem={renderItem}
                 keyExtractor={d => d.id}
                 scrollPercent={0.001}
                 onMoveEnd={({ data }) => {
-                    setEntries(entries => {
-                        return [
-                            ...data,
-                            ...entries.filter(e => today >= new Date(e.created) && today <= new Date(e.dueDate)),
-                        ];
-                    })
+                    setEntries(data);
                 }} />
                 <View style={{
                     height: 55

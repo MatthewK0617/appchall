@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Calendar from './components/calendar/calendar';
+// import CalendarH from './components/CalendarH/CalendarH';
 import FrontPage from './components/front-page/front-page';
 
 
@@ -14,6 +15,9 @@ export default function App() {
 
       {page === "Calendar" && 
         <Calendar />
+      }
+      {page === "CalendarH" && 
+        <CalendarH />
       }
     </View>
   );

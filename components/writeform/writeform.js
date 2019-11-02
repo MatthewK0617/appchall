@@ -65,7 +65,7 @@ function Content({ addEntry }) {
     let [importance, setImportance] = React.useState(3);
     let [type, setType] = React.useState("Homework");
     let [c, setC] = React.useState(-1);
-    let [dueDate, setDueDate] = React.useState(new Date());
+    let [dueDate, setDueDate] = React.useState(format(new Date(), "MM/dd/yyyy"));
     let [image, setImage] = React.useState(undefined);
 
     return (
@@ -77,9 +77,8 @@ function Content({ addEntry }) {
                 <TextInput value={desc} onChangeText={newValue => setDesc(newValue)} style={styles.entersubject} placeholder="Enter Description" />
             </View>
             <View style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                <TouchableOpacity onPress={() => setShowClasses(!showClasses)}><Text>{c === -1 ? "Select Class" : CLASSES[c].id}</Text></TouchableOpacity>
-                {showClasses && <View style={{
-                    flexDirection: 'row', justifyContent: "center", flexWrap: 'wrap'
+                <View style={{
+                    flexDirection: 'row', flexWrap: 'wrap'
                 }}>
                     {CLASSES.map((c, i) => (
                         <TouchableOpacity style={{
@@ -90,16 +89,16 @@ function Content({ addEntry }) {
                         }} key={c + i} onPress={() => { setC(i) }}><Text style={{
                             color: 'white',
                         }}>{c.id}</Text></TouchableOpacity>))}
-                </View>}
+                </View>
             </View>
-            <View style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+            <View style={{ display: 'flex', flexDirection: 'column'}}>
                 <DatePicker style={{ width: 200 }}
                     date={dueDate}
                     mode="date"
                     placeholder="select date"
-                    format="YYYY-MM-DD"
-                    minDate="2018-05-01"
-                    maxDate="2020-06-01"
+                    format="MM-DD-YYYY"
+                    minDate="01-05-2018"
+                    maxDate="02-06-2020"
                     confirmBtnText="Confirm"
                     cancelBtnText="Cancel"
                     customStyles={{
@@ -146,7 +145,7 @@ function Content({ addEntry }) {
                         title: title,
                         description: desc,
                         img: undefined,
-                        created: new Date().getTime(),
+                        created: format(new Date(), "MM/dd/yy"),
                         completed: false,
                         dueDate: dueDate,
                         color: CLASSES[c].color,

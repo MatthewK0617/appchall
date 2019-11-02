@@ -9,7 +9,7 @@ import TodoList from '../todolist/todolist';
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-export default function Calendar() {
+export default function Calendar({ setPage }) {
     let [today, setToday] = React.useState(new Date());
     let firstDay = getFirstDay(startOfDay(new Date()));
 
@@ -43,7 +43,7 @@ export default function Calendar() {
             <View style={styles.calendar}>
                 <View style={styles.topRow}>
                     <View>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={() => setPage("Front Page")}>
                         <Ionicons name="md-checkbox" size={32} color={colors.blue5} />
                         </TouchableOpacity>
                     </View>
