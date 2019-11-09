@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import { colors } from '../../Constants';
-import {setDate} from 'date-fns';
+import {setDate, isEqual} from 'date-fns';
 
 function DayCell({ txt }) {
   return (
@@ -11,9 +11,11 @@ function DayCell({ txt }) {
   );
 }
 
-function Cell({ txt, date, active, setToday }) {
+function Cell({ txt, date, selectDay, setToday }) {
+  let active = isEqual(selectDay, date);
+  
   return (
-    <TouchableOpacity style={styles.cell} onPress={()=>setToday(today => setDate(today, date))}>
+    <TouchableOpacity style={styles.cell} onPress={()=>setToday(date)}>
       <Text style={[(active ? styles.coloractive : styles.color2), styles.txt2]}>{txt}</Text>
       {active && <View style={styles.circle} />}
     </TouchableOpacity>

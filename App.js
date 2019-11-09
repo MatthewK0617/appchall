@@ -9,12 +9,12 @@ export default function App() {
   let [page, setPage] = React.useState("Front Page")
 
   return (
-    <View>
+    <View style={styles.container}>
       {page === "Front Page" &&
         <FrontPage setPage={setPage}/>}
 
       {page === "Calendar" && 
-        <Calendar />
+        <Calendar setPage={setPage} />
       }
       {page === "CalendarH" && 
         <CalendarH />

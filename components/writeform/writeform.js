@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import DatePicker from 'react-native-datepicker'
-import { format } from 'date-fns';
+import { format, addDays } from 'date-fns';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../../Constants';
 
@@ -40,14 +40,7 @@ const CLASSES = [
     { id: "Science", color: "lightgreen", teacher: "Mr. Jones" },
     { id: "Social Studies", color: "lightpink", teacher: "Mrs. Jones" },
     { id: "English", color: "yellow", teacher: "Dr. Jones" },
-    { id: "Extra Curricular", color: "lightgray", teacher: "None" },
-    { id: "Extra Curricular", color: "lightgray", teacher: "None" },
-    { id: "Extra Curricular", color: "lightgray", teacher: "None" },
-    { id: "Extra Curricular", color: "lightgray", teacher: "None" },
-    { id: "Extra Curricular", color: "lightgray", teacher: "None" },
-    { id: "Extra Curricular", color: "lightgray", teacher: "None" },
-
-
+    { id: "Extra Curricular", color: "lightgray", teacher: "None" }
 ]
 
 const TYPES = [
@@ -65,34 +58,32 @@ function Content({ addEntry }) {
     let [importance, setImportance] = React.useState(3);
     let [type, setType] = React.useState("Homework");
     let [c, setC] = React.useState(-1);
-    let [dueDate, setDueDate] = React.useState(format(new Date(), "MM/dd/yyyy"));
+    let [dueDate, setDueDate] = React.useState(format(addDays(new Date(), 1), "MM/dd/yyyy"));
     let [image, setImage] = React.useState(undefined);
 
     return (
         <ScrollView style={styles.content}>
             <View style={styles.contentTopRow}>
-                <TextInput value={title} onChangeText={newValue => setTitle(newValue)} style={styles.entersubject} placeholder="Enter Title" />
+                <TextInput style={styles.entersubject} value={title} onChangeText={newValue => setTitle(newValue)} style={styles.entersubject} placeholder="Enter Title" />
             </View>
-            <View style={styles.contentTopRow}>
-                <TextInput value={desc} onChangeText={newValue => setDesc(newValue)} style={styles.entersubject} placeholder="Enter Description" />
-            </View>
+
             <View style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
                 <View style={{
                     flexDirection: 'row', flexWrap: 'wrap'
                 }}>
-                    {CLASSES.map((c, i) => (
+                    {CLASSES.map((cc, i) => (
                         <TouchableOpacity style={{
                             borderRadius: 3,
-                            backgroundColor: c.i === c ? 'purple' : 'black', // check ****
+                            backgroundColor: i === c ? 'purple' : 'black', // check ****
                             padding: 4,
                             margin: 3,
-                        }} key={c + i} onPress={() => { setC(i) }}><Text style={{
+                        }} key={i} onPress={() => { setC(i) }}><Text style={{
                             color: 'white',
-                        }}>{c.id}</Text></TouchableOpacity>))}
+                        }}>{cc.id}</Text></TouchableOpacity>))}
                 </View>
             </View>
-            <View style={{ display: 'flex', flexDirection: 'column'}}>
-                <DatePicker style={{ width: 200 }}
+            <View style={{ display: 'flex', flexDirection: 'column' }}>
+                <DatePicker style={{ width: 200, padding: 10 }}
                     date={dueDate}
                     mode="date"
                     placeholder="select date"
@@ -115,8 +106,8 @@ function Content({ addEntry }) {
                     onDateChange={(date) => setDueDate(date)} />
             </View>
             <View style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                <Text>Set Importance {importance}</Text>
-                <View style={{ flexDirection: 'row' }}>
+                <View style={{ flexDirection: 'row', alignItems: "center", justifyContent: "flex-start" }}>
+                    <Text>Importance: </Text>
                     {new Array(5).fill(0).map((v, i) => <TouchableOpacity style={{
                         backgroundColor: i === importance - 1 ? "white" : "", // problem, can select all at one time ******
                         justifyContent: "center",
@@ -130,16 +121,21 @@ function Content({ addEntry }) {
             </View>
             <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                 {TYPES.map(t => (
-                    <Button title={t} onPress={() => setType(t)} color={t === type ? "white" : ""} />
+                    <Button title={t} onPress={() => setType(t)} color={t === type ? "white" : "black"} />
                 ))}
             </View>
             <View style={{ display: 'flex', justifyContent: 'flex-end', alignContent: 'flex-end', width: Dimensions.get('window').width }}>
 
+            <View style={styles.contentTopRow}>
+                <TextInput style={styles.enterdescription}
+                returnKeyType="done" multiline={true} value={desc} onChangeText={newValue => setDesc(newValue)} style={styles.entersubject} placeholder="Enter Description" />
+            </View>
+
                 {/****** NOT DOING WHAT IT IS SUPPOSED TO ******/}
 
-                {c === "" && title === "" && <TouchableOpacity><Ionicons name="md-add" size={32} color={'white'} /></TouchableOpacity>} 
+                {c === "" && title === "" && <TouchableOpacity><Ionicons name="md-add" size={32} color={'white'} /></TouchableOpacity>}
 
-               {c !== "" && title !== "" && <TouchableOpacity style={styles.iconCircle} onPress={() =>
+                {c !== "" && title !== "" && <TouchableOpacity style={styles.iconCircle} onPress={() =>
                     addEntry({
                         id: title + new Date().getTime(),
                         title: title,
@@ -155,7 +151,11 @@ function Content({ addEntry }) {
                     })
                 }>
                     <Ionicons name="md-add" size={32} color={'white'} />
-            </TouchableOpacity>}
+                </TouchableOpacity>}
+
+                <View style={{
+                    height: 30,
+                }}></View>
             </View>
         </ScrollView>
     );
@@ -191,6 +191,15 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     entersubject: {
+        backgroundColor: colors.blue4,
+        color: 'white',
+        height: 40,
+        paddingHorizontal: 20,
+        borderRadius: 20,
+        fontSize: 20,
+        flex: 1,
+    },
+    enterdescription: {
         backgroundColor: colors.blue4,
         color: 'white',
         height: 40,

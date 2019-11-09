@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Dimensions, TouchableOpacity, AsyncStorage } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity, AsyncStorage, TouchableWithoutFeedback } from 'react-native';
 import { colors } from '../../Constants';
 import TodoListEntry from './todolist-entry';
 import DraggableFlatList from 'react-native-draggable-flatlist';
@@ -12,7 +12,7 @@ const DATA = [
         title: "title",
         description: "desc",
         img: undefined,
-        created: '11/2/19',
+        created: '10/12/19',
         dueDate: '11/4/19',
         color: "skyblue",
         className: "Math",
@@ -31,22 +31,25 @@ const DATA = [
 ]
 
 export default function TodoList({ today }) {
-    let [open, setOpen] = React.useState(true);
+    let [open, setOpen] = React.useState(false);
     let [entries, setEntries] = React.useState(DATA);
 
+    const todaysEntries = entries.filter(
+        e => (today >= new Date(e.created) && today <= new Date(e.dueDate))
+    );
+
     function addEntry(entry) {
-        console.log(entry);
         setEntries([{ ...entry }, ...entries])
     }
 
-    function deleteEntry(entry) { // check **********
-        let entries2 = [...entries];
-        entries2.filter(v => v.id !== entry.id);
-        setEntries(entries2);
-        if (entries2.length === 0) {
-            AsyncStorage.setItem('entries', '[]');
-        }
-    }
+    // function deleteEntry(entry) { // check **********
+    //     let entries2 = [...entries];
+    //     entries2.filter(v => v.id !== entry.id);
+    //     setEntries(entries2);
+    //     if (entries2.length === 0) {
+    //         AsyncStorage.setItem('entries', '[]');
+    //     }
+    // }
 
     function completeEntry(id) {
         let entries2 = [...entries];
@@ -74,7 +77,7 @@ export default function TodoList({ today }) {
         async function load() {
             let data = await AsyncStorage.getItem('entries');
             if (!data) setEntries(DATA);
-            else setEntries([JSON.parse(data)]);
+            else setEntries(JSON.parse(data));
         }
         load();
     }, []);
@@ -89,8 +92,13 @@ export default function TodoList({ today }) {
     return (
         <View style={styles.bg}>
             <View style={styles.container}>
-                <Text style={styles.titletxt}>TodoList ({entries.length})</Text>
-                <Content today={today} entries={entries} setEntries={setEntries} completeEntry={completeEntry} />
+                <TouchableWithoutFeedback onPress={() => setOpen(!open)}>
+                    <Text style={styles.titletxt}>TodoList ({todaysEntries.length})</Text></TouchableWithoutFeedback>
+
+                {
+                    open &&
+                    <Content todaysEntries={todaysEntries} today={today} entries={entries} setEntries={setEntries} completeEntry={completeEntry} />
+                }
                 <View style={styles.writeForm}>
                     <WriteForm addEntry={addEntry} />
                 </View>
@@ -100,7 +108,7 @@ export default function TodoList({ today }) {
     );
 }
 
-function Content({ entries, today, setEntries, completeEntry }) {
+function Content({ entries, today, setEntries, completeEntry, todaysEntries }) {
 
     function renderItem({ item, index, move, moveEnd, isActive }) {
 
@@ -109,7 +117,6 @@ function Content({ entries, today, setEntries, completeEntry }) {
                 <View style={{
                     height: 4,
                 }}></View>
-
                 <TouchableOpacity
                     style={{
                         margin: 1,
@@ -128,33 +135,26 @@ function Content({ entries, today, setEntries, completeEntry }) {
                     onLongPress={move}
                     onPressOut={moveEnd}
                 >
-                    <TodoListEntry  today={today} entry={item} setEntries={setEntries} completeEntry={completeEntry} />
+                    <TodoListEntry today={today} entry={item} setEntries={setEntries} completeEntry={completeEntry} />
                 </TouchableOpacity>
             </View>
         );
     }
 
-    const todaysEntries = entries.filter(
-        e => (today >= new Date(e.created) && today <= new Date(e.dueDate))
-    );
-
     /***** if I make <DraggableFlatList data={todaysEntries}, nothing shows  *****/
 
     return (
-        <View style={{ flex: 1 }}>
-            <View style={{
-                    height: 4,
-                }}></View>
+
+        <View style={{
+            height: 100 * Math.min(todaysEntries.length, 4)
+        }}>
             <DraggableFlatList data={todaysEntries}
                 renderItem={renderItem}
                 keyExtractor={d => d.id}
-                scrollPercent={0.001}
+
                 onMoveEnd={({ data }) => {
                     setEntries(data);
                 }} />
-                <View style={{
-                    height: 55
-                }}></View>
         </View>
     );
 }
@@ -169,7 +169,6 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'column',
         backgroundColor: 'white',
-        height: '100%',
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
     },
@@ -189,11 +188,5 @@ const styles = StyleSheet.create({
         paddingRight: 20,
         paddingBottom: 20,
         marginTop: 20,
-    },
-    writeForm: {
-        position: 'absolute',
-        bottom: 0,
-        width: Dimensions.get('window').width,
-        zIndex: 3,
     },
 });

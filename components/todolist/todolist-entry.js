@@ -1,11 +1,16 @@
 import React from 'react';
-import { View, Text, StyleSheet, Button, TextInput, Dimensions, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
+import { View, Image, Text, StyleSheet, Button, TextInput, Dimensions, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
 import { colors } from '../../Constants';
 import { Ionicons } from '@expo/vector-icons';
 import CheckBox from 'react-native-check-box';
 import Modal from 'react-native-modal';
 import Sbutton from '../common/sbutton';
 import DatePicker from 'react-native-datepicker';
+import { differenceInCalendarDays, getDate } from 'date-fns';
+import * as ImagePicker from 'expo-image-picker';
+import * as Permissions from 'expo-permissions';
+import Constants from 'expo-constants';
+
 
 function EditorScreen({ close, entry, setEntries }) {
 
@@ -14,11 +19,32 @@ function EditorScreen({ close, entry, setEntries }) {
     let [dueDate, setDueDate] = React.useState(entry.dueDate);
     let [steps, setSteps] = React.useState(["Essay Body Paragraph 1", "Essay Body Paragraph 2", "Essay Conclusion"]);
 
-
     function onSubmit() {
         title = title === "" ? entry.title : title
         setEntries(entries => entries.map(en => (en.id === entry.id) ? { ...en, title, description, dueDate } : en));
     }
+
+    const getPermissionAsync = async () => {
+        if (Constants.platform.ios) {
+            let a = await Permissions.askAsync(Permissions.CAMERA);
+            let b = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+        }
+    };
+
+    const _pickImage = async () => {
+        await getPermissionAsync();
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsMultipleSelection: true,
+            aspect: [1, 1],
+        });
+
+        if (!result.cancelled) {
+            updateImage(subjectKey, result.uri);
+            // setImagePicked(true);
+        }
+    };
+
 
     return (<View style={styles.fullPage} >
         <TextInput style={{
@@ -42,7 +68,7 @@ function EditorScreen({ close, entry, setEntries }) {
             date={dueDate}
             mode="date"
             placeholder="select date"
-            format="MM-DD-YYYY"
+            format="MM/DD/YYYY"
             minDate="01-05-2018"
             maxDate="02-06-2020"
             confirmBtnText="Confirm"
@@ -59,6 +85,7 @@ function EditorScreen({ close, entry, setEntries }) {
                 }
             }}
             onDateChange={(date) => setDueDate(date)} />
+        <TouchableOpacity onPress={() => { }}></TouchableOpacity>
         {steps.map((s, i) => (
             <View>
                 <View style={{ display: 'flex', flexDirection: 'row' }}>
@@ -92,7 +119,9 @@ function EditorScreen({ close, entry, setEntries }) {
             borderRadius: 20,
             paddingVertical: 5,
             paddingHorizontal: 50,
-        }}>
+        }}
+            onPress={_pickImage}
+        >
             <Text style={{ fontSize: 20, color: 'white' }}>Select Image</Text>
         </TouchableOpacity>
         <TouchableOpacity style={{
@@ -102,7 +131,8 @@ function EditorScreen({ close, entry, setEntries }) {
             paddingVertical: 5,
             paddingHorizontal: 50,
             margin: 5
-        }}>
+        }}
+        >
             <Text style={{ fontSize: 20, color: 'white' }}>Take Picture</Text>
         </TouchableOpacity>
         <View style={{ flexDirection: 'row', justifyContent: 'space-around', paddingTop: 10 }}>
@@ -125,6 +155,7 @@ function EditorScreen({ close, entry, setEntries }) {
                 <Text style={{ fontSize: 20, color: 'white' }}>close</Text>
             </TouchableOpacity>
 
+
         </View>
     </View>)
 }
@@ -132,20 +163,25 @@ function EditorScreen({ close, entry, setEntries }) {
 export default function TodoListEntry({ entry, setEntries, completeEntry, today }) {
 
     let [showEditor, setShowEditor] = React.useState(false);
+    let [showImage, setShowImage] = React.useState(false);
 
     return (
         <View style={styles.container}>
             <TouchableOpacity onPress={() => setShowEditor(true)}>
                 <Ionicons name="md-menu" size={30} color={colors.blue3} />
             </TouchableOpacity>
-            {entry.completed ? <View style={styles.textview}>
-                <Text style={styles.completed}>{entry.title}</Text>
-                <Text style={styles.text2}>{entry.type}</Text>
-            </View> : <View style={styles.textview}>
-                    <Text style={styles.text1}>{entry.title}</Text>
+
+            <TouchableOpacity onPress={() => setShowImage(true)}>
+                {entry.completed ? <View style={styles.textview}>
+                    <Text style={styles.completed}>{entry.title} {differenceInCalendarDays(getDate(today), getDate(entry.dueDate))}</Text>
                     <Text style={styles.text2}>{entry.type}</Text>
-                </View>}
-            <Text style={styles.text3}>{entry.description}</Text>
+                </View> : <View style={styles.textview}>
+                        <Text style={styles.text1}>{entry.title}</Text>
+                        <Text style={styles.text2}>{entry.type}</Text>
+                        <Text style={styles.text3}>{entry.description}</Text>
+                    </View>}
+            </TouchableOpacity>
+
             <CheckBox
                 style={{ flex: 1, alignItems: 'flex-end' }}
                 onClick={() => completeEntry(entry.id)}
@@ -157,6 +193,12 @@ export default function TodoListEntry({ entry, setEntries, completeEntry, today 
                 style={{ marginTop: 100 }}
             >
                 <EditorScreen entry={entry} setEntries={setEntries} close={() => setShowEditor(false)} />
+            </Modal>
+
+            <Modal isVisible={showImage} >
+                <TouchableOpacity onPress={()=>setShowImage(false)}>
+                    <Image source={require('../../assets/images/1.png')} />
+                </TouchableOpacity>
             </Modal>
         </View>
     );

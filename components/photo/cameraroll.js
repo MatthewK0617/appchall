@@ -12,10 +12,6 @@ import {
 import Constants from 'expo-constants';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
-import { format } from 'date-fns';
-// import AsyncStorage from '@react-native-community/async-storage';
-import { AsyncStorage } from 'react-native';
-import { Card } from 'react-native-paper';
 
 function CameraRoll({
   img,
@@ -61,9 +57,7 @@ function CameraRoll({
   });
 
   return (
-    <ScrollView style={styles.container}>
-      <TouchableOpacity onPress={_pickImage} />
-    </ScrollView>
+    <></>
   );
 }
 
